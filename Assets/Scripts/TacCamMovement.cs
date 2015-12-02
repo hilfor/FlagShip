@@ -8,7 +8,7 @@ public class TacCamMovement : MonoBehaviour
 
     public Transform focusTarget;
     public Transform defaultFocusTarget;
-
+    public float rotaionSpeed = 3f;
 
     private Transform localTransform;
     private Camera localCamera;
@@ -18,7 +18,7 @@ public class TacCamMovement : MonoBehaviour
         localCamera = GetComponent<Camera>();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         FocusOnTarget();
     }
@@ -34,7 +34,10 @@ public class TacCamMovement : MonoBehaviour
 
     void RotateTowardsTarget()
     {
-        localTransform.LookAt(focusTarget.position);
+
+        //localTransform.LookAt(Vector3.Lerp(localTransform.eulerAngles,focusTarget.eulerAngles, Time.deltaTime*rotaionSpeed));
+        localTransform.LookAt(focusTarget);
+
         //localTransform.rotation = Quaternion.RotateTowards(localTransform.rotation, focusTarget.rotation, 3);
     }
 

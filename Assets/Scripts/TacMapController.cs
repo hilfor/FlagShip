@@ -32,7 +32,6 @@ public class TacMapController : MonoBehaviour
                 case ("Ship"):
                     selectedShip = hit.collider.GetComponent<ShipMovement>();
                     tacCamMovementController.SetFocusTarget(hit.collider.transform);
-                    Debug.Log(selectedShip);
                     break;
                 case ("MovementPlane"):
                     MoveShip(selectedShip, hit.point);
@@ -50,9 +49,9 @@ public class TacMapController : MonoBehaviour
     {
         if (moveThis)
         {
-            Debug.Log("moving " + moveThis + " here " + moveHere);
+            //Debug.Log("moving " + moveThis + " here " + moveHere);
             moveHere.y = moveThis.transform.position.y;
-            moveThis.Move(moveHere);
+            moveThis.AddWaypoint(moveHere);
         }
     }
 
