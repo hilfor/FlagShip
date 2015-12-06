@@ -6,12 +6,19 @@ using System.Collections;
 public class ShipMainController : MonoBehaviour
 {
 
-    public ShipsManager.ShipsSide side = ShipsManager.ShipsSide.A;
+    public ShipsManager.ShipsSide shipSide = ShipsManager.ShipsSide.A;
+
     private Transform localTransform;
+    private bool isAlive = true;
     void Start()
     {
         localTransform = transform;
 
-        ShipsManager.GetInstance().RegisterNewShip(side, GetInstanceID(), localTransform);
+        ShipsManager.GetInstance().RegisterNewShip(shipSide, GetInstanceID(), localTransform);
+    }
+
+    public bool IsDead()
+    {
+        return !isAlive;
     }
 }

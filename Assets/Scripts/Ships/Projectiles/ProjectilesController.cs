@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(ParticleSystem))]
 public class ProjectilesController : MonoBehaviour
 {
 
+    public GameObject nozzle;
+    public GameObject projectile;
     private ParticleSystem projectileSystem;
 
     void Start()
     {
-        projectileSystem = GetComponent<ParticleSystem>();
+        GameObject instantiatedProjectileSystem = (GameObject)Instantiate(projectile, nozzle.transform.position, nozzle.transform.rotation);
+        instantiatedProjectileSystem.transform.parent = nozzle.transform;
+        projectileSystem = instantiatedProjectileSystem.GetComponent<ParticleSystem>();
     }
 
     public void Shoot()

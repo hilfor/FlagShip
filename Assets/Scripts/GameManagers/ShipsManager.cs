@@ -73,7 +73,7 @@ public class ShipsManager
             foreach (Transform shipTransform in ((Hashtable)shipsCollection[side]).Values)
             {
                 float distance = Vector3.Distance(sourcePosition, shipTransform.position);
-                float angle = Vector3.Angle(shipTransform.forward, destination);
+                float angle = Vector3.Angle(shipTransform.position, destination);
                 if (distance <= maxDistance && angle < 90)
                 {
                     ships.Add(shipTransform);

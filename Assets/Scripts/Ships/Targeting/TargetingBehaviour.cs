@@ -6,23 +6,23 @@ using System.Collections.ObjectModel;
 
 
 [RequireComponent(typeof(ProjectilesController))]
-[RequireComponent(typeof(ShipMainController))]
 public class TargetingBehaviour : MonoBehaviour
 {
 
     //public 
 
     public float maxTargetDistance;
+    public ShipMainController mainController;
 
     //private
     private ProjectilesController pc;
     private Transform localTransform;
-    private ShipMainController mainController;
 
     private ArrayList viableTargets;
     private ArrayList validTargets;
 
     private Transform currentTarget;
+    private ShipMainController currentTargetController = null;
 
     private bool onTarget = false;
 
@@ -30,7 +30,7 @@ public class TargetingBehaviour : MonoBehaviour
     {
         localTransform = transform;
         pc = GetComponent<ProjectilesController>();
-        mainController = GetComponent<ShipMainController>();
+        //mainController = GetComponent<ShipMainController>();
     }
 
     // Fast iteration
@@ -60,7 +60,14 @@ public class TargetingBehaviour : MonoBehaviour
 
     void UpdateViableTargets()
     {
-        viableTargets = ShipsManager.GetInstance().GetShipsInRange(localTransform.position, localTransform.forward, mainController.side, maxTargetDistance);
+        if (mainController)
+        {
+            viableTargets = ShipsManager.GetInstance().GetShipsInRange(localTransform.position, localTransform.forward, mainController.shipSide, maxTargetDistance);
+        }
+        else
+        {
+            Debug.LogError("Main controller was not set on " + gameObject.name);
+        }
     }
 
     void UpdateValidTargets()
@@ -70,9 +77,10 @@ public class TargetingBehaviour : MonoBehaviour
 
     void UpdateCurrentTarget()
     {
-        if (validTargets.Count > 0)
+        if (validTargets.Count > 0 && currentTargetController && currentTargetController.IsDead())
         {
             currentTarget = (Transform)validTargets[0];
+            currentTargetController = (ShipMainController)currentTarget.GetComponent<ShipMainController>();
         }
     }
 
