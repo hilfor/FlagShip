@@ -1,39 +1,34 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
 
 [RequireComponent(typeof(ProjectilesController))]
+[RequireComponent(typeof(TurretRotationBehaviour))]
 public class TargetingBehaviour : MonoBehaviour
 {
 
     //public 
-
     public float maxTargetDistance;
     public ShipMainController mainController;
 
     //private
     private ProjectilesController pc;
+    private TurretRotationBehaviour trb;
     private Transform localTransform;
 
     private ArrayList viableTargets;
     private ArrayList validTargets;
 
-    private Transform currentTarget;
+    public Transform currentTarget;
     private ShipMainController currentTargetController = null;
-
-    private bool onTarget = false;
 
     void Start()
     {
         localTransform = transform;
         pc = GetComponent<ProjectilesController>();
-        //mainController = GetComponent<ShipMainController>();
+        trb = GetComponent<TurretRotationBehaviour>();
     }
 
-    // Fast iteration
+    #region Fast Iteration
     void Update()
     {
         DoStuffWithCurrentTarget();
@@ -41,20 +36,18 @@ public class TargetingBehaviour : MonoBehaviour
 
     void DoStuffWithCurrentTarget()
     {
-        if (onTarget)
+
+        if (trb.IsOnTarget())
             pc.Shoot();
     }
+    #endregion
 
-    void FollowTarget()
-    {
-
-    }
-
-    // Slow iteration
+    #region Slow Iteration
     void FixedUpdate()
     {
         UpdateViableTargets();
         UpdateValidTargets();
+        UpdateCurrentTarget();
     }
 
 
@@ -77,11 +70,30 @@ public class TargetingBehaviour : MonoBehaviour
 
     void UpdateCurrentTarget()
     {
-        if (validTargets.Count > 0 && currentTargetController && currentTargetController.IsDead())
+        if (validTargets.Count > 0)
         {
-            currentTarget = (Transform)validTargets[0];
-            currentTargetController = (ShipMainController)currentTarget.GetComponent<ShipMainController>();
+            if (currentTargetController)
+            {
+                if (currentTargetController.IsDead())
+                {
+                    Debug.Log("Setting new target, old one is dead");
+                    SetNewTarget((Transform)validTargets[0]);
+                }
+            }
+            else
+            {
+                Debug.Log("Setting new target (no previous target)");
+                SetNewTarget((Transform)validTargets[0]);
+            }
         }
     }
 
+    void SetNewTarget(Transform newTarget)
+    {
+        Debug.Log("This is the new target " + newTarget.name);
+        currentTarget = newTarget;
+        trb.FollowTarget(currentTarget);
+        currentTargetController = (ShipMainController)currentTarget.GetComponent<ShipMainController>();
+    }
+    #endregion
 }

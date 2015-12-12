@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 
 
 public class ShipsManager
@@ -73,8 +71,8 @@ public class ShipsManager
             foreach (Transform shipTransform in ((Hashtable)shipsCollection[side]).Values)
             {
                 float distance = Vector3.Distance(sourcePosition, shipTransform.position);
-                float angle = Vector3.Angle(shipTransform.position, destination);
-                if (distance <= maxDistance && angle < 90)
+                float angle = Vector3.Angle(destination, shipTransform.position - sourcePosition);
+                if (distance <= maxDistance && Mathf.Abs(angle)< 60)
                 {
                     ships.Add(shipTransform);
                 }
