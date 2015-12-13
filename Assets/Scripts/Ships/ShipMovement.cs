@@ -11,19 +11,21 @@ public class ShipMovement : MonoBehaviour
     [Range(0, 1)]
     public float positionError = 0.3f;
 
-    [Range(0, 1)]
-    public float maxMovementSpeed = 0.5f;
-    [Range(0, 1)]
-    public float maxRotationSpeed = 0.5f;
+    [Range(1, 20)]
+    public float maxMovementSpeed = 7.0f;
+    [Range(1, 10)]
+    public float maxRotationSpeed = 3.0f;
 
     public Vector3 velocity = Vector3.zero;
 
     public Vector3 initialPositioning = Vector3.up;
 
+    public bool waitUntilFullyRotated = false;
 
     private Vector3 nextPosition;
     private Transform localTransform;
     private bool firstWaypointNotSet = true;
+    private bool onTarget = false;
 
     void Start()
     {
@@ -41,8 +43,21 @@ public class ShipMovement : MonoBehaviour
     void FixedUpdate()
     {
         SetNextPosition();
-        RotateTowardsNextPosition();
-        Move();
+        if (IsNextPositionValid())
+        {
+            RotateTowardsNextPosition();
+            if (waitUntilFullyRotated)
+            {
+                if (onTarget)
+                {
+                    Move();
+                }
+            }
+            else
+            {
+                Move();
+            }
+        }
     }
 
     public void AddWaypoint(Vector3 newPosition)
@@ -52,22 +67,20 @@ public class ShipMovement : MonoBehaviour
 
     private void Move()
     {
-
-        if (IsNextPositionValid())
-        {
-            transform.position = Vector3.SmoothDamp(localTransform.position, nextPosition, ref velocity, maxMovementSpeed);
-        }
+        transform.position = Vector3.SmoothDamp(localTransform.position, nextPosition, ref velocity, maxMovementSpeed);
     }
 
     private void RotateTowardsNextPosition()
     {
-        if (IsNextPositionValid())
+        Quaternion newRotation = Utils.GetNewLookAtPoint(nextPosition, localTransform.position, localTransform.forward, maxRotationSpeed);
+        if (!localTransform.rotation.Equals(newRotation))
         {
-            Quaternion newRotation = Utils.GetNewLookAtPoint(nextPosition, localTransform.position, localTransform.forward, maxRotationSpeed);
-            if (!localTransform.rotation.Equals(newRotation))
-            {
-                localTransform.rotation = newRotation;
-            }
+            onTarget = false;
+            localTransform.rotation = newRotation;
+        }
+        else
+        {
+            onTarget = true;
         }
     }
 
