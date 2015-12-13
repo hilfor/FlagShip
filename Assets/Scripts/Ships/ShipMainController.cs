@@ -21,4 +21,9 @@ public class ShipMainController : MonoBehaviour
     {
         return !isAlive;
     }
+
+    public void InitiateSubscripts(Vector3 targetPosition)
+    {
+        GetComponent<ShipMovement>().Initiate(targetPosition);
+    }
 }

@@ -76,24 +76,36 @@ public class TargetingBehaviour : MonoBehaviour
             {
                 if (currentTargetController.IsDead())
                 {
-                    Debug.Log("Setting new target, old one is dead");
+                    //Debug.Log("Setting new target, old one is dead");
                     SetNewTarget((Transform)validTargets[0]);
                 }
             }
             else
             {
-                Debug.Log("Setting new target (no previous target)");
+                //Debug.Log("Setting new target (no previous target)");
                 SetNewTarget((Transform)validTargets[0]);
             }
+        }
+        else
+        {
+            //Debug.Log("No valid targets, clearing the current target");
+            ClearTarget();
         }
     }
 
     void SetNewTarget(Transform newTarget)
     {
-        Debug.Log("This is the new target " + newTarget.name);
+        //Debug.Log("This is the new target " + newTarget.name);
         currentTarget = newTarget;
         trb.FollowTarget(currentTarget);
         currentTargetController = (ShipMainController)currentTarget.GetComponent<ShipMainController>();
+    }
+
+    void ClearTarget()
+    {
+        currentTarget = null;
+        currentTargetController = null;
+        trb.ClearTarget();
     }
     #endregion
 }

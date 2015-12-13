@@ -36,11 +36,15 @@ public class ProjectilesController : MonoBehaviour
 
     public void Shoot()
     {
-        Debug.Log("Shooting");
         if (!reloading)
         {
+            //Debug.Log("Shooting");
             projectileSystem.Emit(1);
             StartCoroutine("WaitForReload");
+        }
+        else
+        {
+            //Debug.Log("Reloading");
         }
     }
 }

@@ -6,30 +6,42 @@ public class ShipMovement : MonoBehaviour
 
 
     public Queue positionsQueue;
-    public Vector3 nextPosition = Vector3.up;
+
 
     [Range(0, 1)]
     public float positionError = 0.3f;
 
     [Range(0, 1)]
-    public float maxSpeed = 0.5f;
-
-    public float sumMove = 1f;
+    public float maxMovementSpeed = 0.5f;
+    [Range(0, 1)]
+    public float maxRotationSpeed = 0.5f;
 
     public Vector3 velocity = Vector3.zero;
 
-    private Transform localTransform;
+    public Vector3 initialPositioning = Vector3.up;
 
+
+    private Vector3 nextPosition;
+    private Transform localTransform;
+    private bool firstWaypointNotSet = true;
 
     void Start()
     {
+        nextPosition = initialPositioning;
         positionsQueue = new Queue();
         localTransform = transform;
+    }
+
+    public void Initiate(Vector3 newInitialPosition)
+    {
+        initialPositioning = newInitialPosition;
+        Start();
     }
 
     void FixedUpdate()
     {
         SetNextPosition();
+        RotateTowardsNextPosition();
         Move();
     }
 
@@ -41,26 +53,38 @@ public class ShipMovement : MonoBehaviour
     private void Move()
     {
 
-        if (nextPosition != Vector3.up)
+        if (IsNextPositionValid())
         {
-            transform.position = Vector3.SmoothDamp(localTransform.position, nextPosition, ref velocity, maxSpeed);
-            //sumMove += Time.deltaTime * movementSpeed;
-            //localTransform.position = Vector3.LerpUnclamped(localTransform.position, nextPosition, sumMove);
-            //Debug.Log(sumMove);
+            transform.position = Vector3.SmoothDamp(localTransform.position, nextPosition, ref velocity, maxMovementSpeed);
+        }
+    }
+
+    private void RotateTowardsNextPosition()
+    {
+        if (IsNextPositionValid())
+        {
+            Quaternion newRotation = Utils.GetNewLookAtPoint(nextPosition, localTransform.position, localTransform.forward, maxRotationSpeed);
+            if (!localTransform.rotation.Equals(newRotation))
+            {
+                localTransform.rotation = newRotation;
+            }
         }
     }
 
     private void SetNextPosition()
     {
 
-
-        if (Mathf.Abs((nextPosition - localTransform.position).magnitude) < positionError && positionsQueue.Count >= 1)
+        if ((firstWaypointNotSet || Mathf.Abs((nextPosition - localTransform.position).magnitude) < positionError) && positionsQueue.Count >= 1)
         {
-            //Debug.Log("Popping next position");
             nextPosition = (Vector3)positionsQueue.Dequeue();
-            //Debug.Log("Next position poped");
             positionsQueue.TrimToSize();
-            sumMove = 0f;
+            firstWaypointNotSet = false;
         }
     }
+
+    private bool IsNextPositionValid()
+    {
+        return !nextPosition.Equals(initialPositioning);
+    }
+
 }

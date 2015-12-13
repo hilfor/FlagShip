@@ -25,6 +25,11 @@ public class TurretRotationBehaviour : MonoBehaviour
         currentTarget = newTarget;
     }
 
+    public void ClearTarget()
+    {
+        currentTarget = null;
+    }
+
     public bool IsOnTarget()
     {
 
@@ -41,16 +46,16 @@ public class TurretRotationBehaviour : MonoBehaviour
         Quaternion newRotation;
         if (currentTarget)
         {
-            newRotation = GetNewLookAtPoint(currentTarget.position);
+            newRotation = Utils.GetNewLookAtPoint(currentTarget.position, localTransform.position, localTransform.forward, rotationSpeed);
             if (!localTransform.rotation.Equals(newRotation))
             {
-                Debug.Log("Following target " + currentTarget);
+                //Debug.Log("Following target " + currentTarget);
                 onTarget = false;
                 localTransform.rotation = newRotation;
             }
             else
             {
-                Debug.Log("Currently on target");
+                //Debug.Log("Currently on target");
                 onTarget = true;
             }
         }
@@ -59,7 +64,7 @@ public class TurretRotationBehaviour : MonoBehaviour
             newRotation = GetNewRotation(defaultRotation);
             if (!localTransform.rotation.Equals(newRotation))
             {
-                Debug.Log("Returning to default rotation");
+                //Debug.Log("Returning to default rotation");
                 onTarget = false;
                 localTransform.rotation = newRotation;
             }
@@ -72,11 +77,11 @@ public class TurretRotationBehaviour : MonoBehaviour
         return Quaternion.LookRotation(lookAt);
     }
 
-    Quaternion GetNewLookAtPoint(Vector3 whereTo)
-    {
-        Vector3 targetDirection = whereTo - localTransform.position;
-        float step = rotationSpeed * Time.deltaTime;
-        Vector3 newDirection = Vector3.RotateTowards(localTransform.forward, targetDirection, step, 0f);
-        return Quaternion.LookRotation(newDirection);
-    }
+    //Quaternion GetNewLookAtPoint(Vector3 whereTo)
+    //{
+    //    Vector3 targetDirection = whereTo - localTransform.position;
+    //    float step = rotationSpeed * Time.deltaTime;
+    //    Vector3 newDirection = Vector3.RotateTowards(localTransform.forward, targetDirection, step, 0f);
+    //    return Quaternion.LookRotation(newDirection);
+    //}
 }
