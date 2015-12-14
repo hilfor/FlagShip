@@ -20,6 +20,8 @@ public class TacCamMovement : MonoBehaviour
     private Transform localTransform;
     private Camera localCamera;
 
+    private bool cameraChangedTargets = false;
+
     private Vector3 defaultRotationDirection;
 
     void Start()
@@ -46,20 +48,27 @@ public class TacCamMovement : MonoBehaviour
 
     void RotateTowardsTarget()
     {
-        // this should be executed on the 1st focus on target 
-        Quaternion newRotation = Utils.GetNewLookAtPoint(focusTarget.position, localTransform.position, localTransform.forward, rotaionSpeed);
-        if (!localTransform.rotation.Equals(newRotation))
+        if (cameraChangedTargets)
         {
-            onTarget = false;
-            localTransform.rotation = newRotation;
+            // this should be executed on the 1st focus on target 
+            Quaternion newRotation = Utils.GetNewLookAtPoint(focusTarget.position, localTransform.position, localTransform.forward, rotaionSpeed);
+            if (!localTransform.rotation.Equals(newRotation))
+            {
+                onTarget = false;
+                localTransform.rotation = newRotation;
+            }
+            else
+            {
+                onTarget = true;
+                cameraChangedTargets = false;
+            }
         }
         else
         {
-            onTarget = true;
+            // this should be used after the 1st focus on target completed
+            localTransform.LookAt(focusTarget);
         }
 
-        // this should be used after the 1st focus on target completed
-        // transform.LookAt(focusTarget);
     }
 
     void ZoomOnTarget()
