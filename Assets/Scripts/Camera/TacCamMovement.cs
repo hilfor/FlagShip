@@ -11,25 +11,46 @@ public class TacCamMovement : MonoBehaviour
     [Range(0, 1)]
     public float rotaionSpeed = .5f;
 
+    public float focusMargin = 30f;
+
     public float frustumHeight;
     public float frustumWidth;
 
     public float requiredAngle;
 
+    public float maxZoom = 5f;
+    public float maxZoomSpeed;
+
+    public Transform defaultCameraPosition;
+    public Transform defaultCameraRotationDirection;
+
+
     private bool onTarget = false;
     private Transform localTransform;
     private Camera localCamera;
 
-    private bool cameraChangedTargets = false;
+    private bool smoothFocusOnTarget = false;
+
+    #region defaults
 
     private Vector3 defaultRotationDirection;
+    private Vector3 defaultPositioning;
+    private float defaultFov;
+    #endregion
+
+    private float aspectRatio;
+    private float fov;
+    private float tanFov;
 
     void Start()
     {
         localTransform = transform;
         localCamera = GetComponent<Camera>();
-        defaultRotationDirection = localTransform.forward;
+
+        SetDefaults();
+
     }
+
 
     void Update()
     {
@@ -42,15 +63,23 @@ public class TacCamMovement : MonoBehaviour
         {
             RotateTowardsTarget();
             ZoomOnTarget();
-            TestFrustum();
+            //TestFrustum();
         }
+    }
+
+    void ResetView()
+    {
+        localCamera.fieldOfView = defaultFov;
+        localTransform.rotation = Quaternion.FromToRotation(localTransform.forward, defaultRotationDirection);
     }
 
     void RotateTowardsTarget()
     {
-        if (cameraChangedTargets)
+
+        // Should I smooth rotate towards the target or just follow it whereever it goes (smooth focus is slower rotation)
+        if (smoothFocusOnTarget)
         {
-            // this should be executed on the 1st focus on target 
+            // Smooth rotation towards the target
             Quaternion newRotation = Utils.GetNewLookAtPoint(focusTarget.position, localTransform.position, localTransform.forward, rotaionSpeed);
             if (!localTransform.rotation.Equals(newRotation))
             {
@@ -60,12 +89,12 @@ public class TacCamMovement : MonoBehaviour
             else
             {
                 onTarget = true;
-                cameraChangedTargets = false;
+                smoothFocusOnTarget = false;
             }
         }
         else
         {
-            // this should be used after the 1st focus on target completed
+            // Just look at the target 
             localTransform.LookAt(focusTarget);
         }
 
@@ -74,17 +103,9 @@ public class TacCamMovement : MonoBehaviour
     void ZoomOnTarget()
     {
 
-        if (localCamera.orthographic)
-        {
-            //The camera is in ortho mode, therefore:
-            // Play with the camera size 
-        }
-        else
-        {
+        float distanceFromObject = (focusTarget.position - localTransform.position).magnitude;
+        localCamera.fieldOfView = Mathf.Rad2Deg * Mathf.Tan(focusMargin / distanceFromObject);
 
-            //The camera is in perspective mode, therefore
-            // Play with the camera view angle
-        }
     }
 
     void TestFrustum()
@@ -107,16 +128,53 @@ public class TacCamMovement : MonoBehaviour
     public void SetFocusTarget(GameObject focusTarget)
     {
         this.focusTarget = focusTarget.transform;
+        smoothFocusOnTarget = true;
     }
 
     public void SetFocusTarget(Transform focusTarget)
     {
         this.focusTarget = focusTarget;
+        smoothFocusOnTarget = true;
     }
+
+    #endregion
 
     public void ClearFocusTarget()
     {
-        this.focusTarget = defaultFocusTarget;
+        if (defaultFocusTarget)
+        {
+            focusTarget = defaultFocusTarget;
+        }
+        else
+        {
+            focusTarget = null;
+        }
+        smoothFocusOnTarget = true;
+        ResetView();
+
+
     }
-    #endregion
+
+    void SetDefaults()
+    {
+        if (defaultCameraRotationDirection)
+        {
+            defaultRotationDirection = defaultCameraRotationDirection.position;
+        }
+        else
+        {
+            defaultRotationDirection = localTransform.forward;
+        }
+
+        if (defaultCameraPosition)
+        {
+            defaultPositioning = defaultCameraPosition.position;
+        }
+        else
+        {
+            defaultPositioning = localTransform.position;
+        }
+
+        defaultFov = localCamera.fieldOfView;
+    }
 }

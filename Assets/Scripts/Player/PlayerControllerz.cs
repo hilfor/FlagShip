@@ -21,5 +21,17 @@ public class PlayerControllerz : MonoBehaviour
                 }
             }
         }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 10f))
+            {
+                if (hit.collider.tag.Equals("TacMap"))
+                {
+                    //Debug.Log("Ray hit tacmap");
+                    hit.collider.GetComponent<TacMapController>().ClearSelection();
+                }
+            }
+        }
     }
 }
