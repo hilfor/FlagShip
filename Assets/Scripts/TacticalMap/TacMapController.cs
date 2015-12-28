@@ -43,6 +43,7 @@ public class TacMapController : MonoBehaviour
     public void ClearSelection()
     {
         selectedShip = null;
+        tacCamMovementController.ClearFocusTarget();
     }
 
     protected void MoveShip(ShipMovement moveThis, Vector3 moveHere)

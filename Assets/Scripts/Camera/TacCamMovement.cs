@@ -63,14 +63,13 @@ public class TacCamMovement : MonoBehaviour
         {
             RotateTowardsTarget();
             ZoomOnTarget();
-            //TestFrustum();
         }
     }
 
     void ResetView()
     {
         localCamera.fieldOfView = defaultFov;
-        localTransform.rotation = Quaternion.FromToRotation(localTransform.forward, defaultRotationDirection);
+        localTransform.rotation = Quaternion.FromToRotation(localTransform.up, defaultRotationDirection);
     }
 
     void RotateTowardsTarget()
@@ -151,15 +150,13 @@ public class TacCamMovement : MonoBehaviour
         }
         smoothFocusOnTarget = true;
         ResetView();
-
-
     }
 
     void SetDefaults()
     {
         if (defaultCameraRotationDirection)
         {
-            defaultRotationDirection = defaultCameraRotationDirection.position;
+            defaultRotationDirection = localTransform.position- defaultCameraRotationDirection.position;
         }
         else
         {

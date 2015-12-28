@@ -16,7 +16,7 @@ public class PlayerControllerz : MonoBehaviour
             {
                 if (hit.collider.tag.Equals("TacMap"))
                 {
-                    //Debug.Log("Ray hit tacmap");
+                    Debug.Log("Ray hit tacmap, select");
                     hit.collider.GetComponent<TacMapController>().DoSelectProjection(hit.textureCoord);
                 }
             }
@@ -28,7 +28,7 @@ public class PlayerControllerz : MonoBehaviour
             {
                 if (hit.collider.tag.Equals("TacMap"))
                 {
-                    //Debug.Log("Ray hit tacmap");
+                    Debug.Log("Ray hit tacmap, deselect");
                     hit.collider.GetComponent<TacMapController>().ClearSelection();
                 }
             }
