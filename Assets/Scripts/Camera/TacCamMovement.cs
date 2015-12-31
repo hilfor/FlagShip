@@ -42,6 +42,8 @@ public class TacCamMovement : MonoBehaviour
     private float fov;
     private float tanFov;
 
+    private float lookSpeed = 10f;
+
     void Start()
     {
         localTransform = transform;
@@ -69,7 +71,9 @@ public class TacCamMovement : MonoBehaviour
     void ResetView()
     {
         localCamera.fieldOfView = defaultFov;
-        localTransform.rotation = Quaternion.FromToRotation(localTransform.up, defaultRotationDirection);
+
+        localTransform.rotation = Quaternion.LookRotation(defaultRotationDirection);
+
     }
 
     void RotateTowardsTarget()
@@ -156,7 +160,7 @@ public class TacCamMovement : MonoBehaviour
     {
         if (defaultCameraRotationDirection)
         {
-            defaultRotationDirection = localTransform.position- defaultCameraRotationDirection.position;
+            defaultRotationDirection = localTransform.position - defaultCameraRotationDirection.position;
         }
         else
         {
@@ -171,6 +175,7 @@ public class TacCamMovement : MonoBehaviour
         {
             defaultPositioning = localTransform.position;
         }
+
 
         defaultFov = localCamera.fieldOfView;
     }
