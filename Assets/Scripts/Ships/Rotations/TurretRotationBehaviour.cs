@@ -6,7 +6,8 @@ public class TurretRotationBehaviour : MonoBehaviour
 
     public float rotationSpeed = 1f;
 
-    public Vector3 defaultRotation;
+    public Transform defaultParentSource;
+    public Transform defaultRotationTransform;
 
     private Transform currentTarget;
     private Transform localTransform;
@@ -16,7 +17,14 @@ public class TurretRotationBehaviour : MonoBehaviour
 
     void Start()
     {
-        defaultRotation = transform.forward;
+        if (defaultParentSource)
+        {
+            defaultRotationTransform = defaultParentSource;
+        }
+        else
+        {
+            defaultRotationTransform = transform;
+        }
         localTransform = transform;
     }
 
@@ -32,7 +40,6 @@ public class TurretRotationBehaviour : MonoBehaviour
 
     public bool IsOnTarget()
     {
-
         return onTarget;
     }
 
@@ -61,7 +68,7 @@ public class TurretRotationBehaviour : MonoBehaviour
         }
         else
         {
-            newRotation = GetNewRotation(defaultRotation);
+            newRotation = GetNewRotation(defaultRotationTransform.forward);
             if (!localTransform.rotation.Equals(newRotation))
             {
                 //Debug.Log("Returning to default rotation");
@@ -77,11 +84,4 @@ public class TurretRotationBehaviour : MonoBehaviour
         return Quaternion.LookRotation(lookAt);
     }
 
-    //Quaternion GetNewLookAtPoint(Vector3 whereTo)
-    //{
-    //    Vector3 targetDirection = whereTo - localTransform.position;
-    //    float step = rotationSpeed * Time.deltaTime;
-    //    Vector3 newDirection = Vector3.RotateTowards(localTransform.forward, targetDirection, step, 0f);
-    //    return Quaternion.LookRotation(newDirection);
-    //}
 }
